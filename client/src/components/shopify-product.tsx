@@ -74,7 +74,7 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
 
   return (
     <div className="mb-8">
-      <h2 className="text-lg font-semibold text-foreground mb-4 text-center">Featured Products</h2>
+      <h2 className="text-2xl font-bold gradient-cyber bg-clip-text text-transparent mb-6 text-center">Featured Products</h2>
       
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -114,14 +114,14 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                   className="w-[200px] flex-shrink-0 snap-start"
                 >
-                  <div className="bg-card rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 h-full">
+                  <div className="bg-card/80 backdrop-blur-sm rounded-2xl shadow-xl hover:shadow-2xl border border-primary/20 hover:border-primary/40 overflow-hidden transition-all duration-500 h-full hover:scale-105">
                     <div className="relative">
                       <img 
                         src={product.image} 
                         alt={product.title} 
-                        className="w-full h-48 object-contain bg-gray-50"
+                        className="w-full h-48 object-contain bg-gradient-to-br from-muted/50 to-primary/10"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-primary/20 via-transparent to-secondary/10" />
                     </div>
                     
                     <div className="p-4">
@@ -136,7 +136,7 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => handlePurchase(product)}
-                        className="w-full gradient-primary text-white text-sm font-semibold py-2.5 px-4 rounded-xl hover:shadow-lg transition-shadow duration-300"
+                        className="w-full gradient-neon text-white text-sm font-bold py-3 px-4 rounded-xl hover:shadow-xl shadow-primary/30 transition-all duration-300 hover:scale-105"
                       >
                         View Product
                       </motion.button>
