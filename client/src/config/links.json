@@ -24,16 +24,16 @@
       "gradient": "gradient-accent"
     },
     {
-      "title": "TikTok",
-      "url": "https://tiktok.com/@demonflare",
-      "icon": "tiktok",
-      "gradient": "gradient-purple"
-    },
-    {
       "title": "Twitter",
-      "url": "https://twitter.com/demonflare",
+      "url": "https://twitter.com/thedemonflare",
       "icon": "twitter",
       "gradient": "gradient-warning"
+    },
+    {
+      "title": "Facebook",
+      "url": "https://facebook.com/thedemonflare",
+      "icon": "facebook",
+      "gradient": "gradient-purple"
     }
   ]
 }

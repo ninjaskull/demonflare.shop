@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { LinkConfig } from "@/types/config";
 import { Store, Instagram, Grid3X3, Music, Twitter, ExternalLink } from "lucide-react";
-import { SiTiktok } from "react-icons/si";
+import { SiFacebook } from "react-icons/si";
 
 interface LinksListProps {
   links: LinkConfig[];
@@ -12,7 +12,7 @@ const getIcon = (iconName: string) => {
     store: Store,
     instagram: Instagram,
     grid: Grid3X3,
-    tiktok: SiTiktok,
+    facebook: SiFacebook,
     twitter: Twitter,
     music: Music,
   };
