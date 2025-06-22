@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ShopifyConfig } from "@/types/config";
@@ -13,6 +13,7 @@ interface Product {
   price: string;
   image: string;
   handle: string;
+  dominantColor?: string;
 }
 
 export function ShopifyProduct({ config }: ShopifyProductProps) {
@@ -25,6 +26,63 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
     fetchDemonflareProducts();
   }, []);
 
+  const extractDominantColor = (imageSrc: string): Promise<string> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        if (!ctx) {
+          resolve('rgb(248, 113, 113)'); // fallback red
+          return;
+        }
+        
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+        
+        try {
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const data = imageData.data;
+          
+          let r = 0, g = 0, b = 0, count = 0;
+          
+          // Sample every 10th pixel for performance
+          for (let i = 0; i < data.length; i += 40) {
+            // Skip very light/white pixels
+            if (data[i] + data[i + 1] + data[i + 2] < 700) {
+              r += data[i];
+              g += data[i + 1];
+              b += data[i + 2];
+              count++;
+            }
+          }
+          
+          if (count > 0) {
+            r = Math.floor(r / count);
+            g = Math.floor(g / count);
+            b = Math.floor(b / count);
+            resolve(`rgb(${r}, ${g}, ${b})`);
+          } else {
+            resolve('rgb(248, 113, 113)'); // fallback red
+          }
+        } catch (error) {
+          console.error('Error extracting color:', error);
+          resolve('rgb(248, 113, 113)'); // fallback red
+        }
+      };
+      
+      img.onerror = () => {
+        resolve('rgb(248, 113, 113)'); // fallback red
+      };
+      
+      img.src = imageSrc;
+    });
+  };
+
   const fetchDemonflareProducts = async () => {
     try {
       // Fetch products from demonflare.com public API
@@ -34,15 +92,24 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
       if (data.products && data.products.length > 0) {
         // Select 4 random products
         const shuffled = data.products.sort(() => 0.5 - Math.random());
-        const selectedProducts = shuffled.slice(0, 4).map((product: any) => ({
-          id: product.id,
-          title: product.title,
-          price: `₹${product.variants[0]?.price || '0.00'}`,
-          image: product.images[0]?.src || '',
-          handle: product.handle
-        }));
+        const selectedProducts = shuffled.slice(0, 4);
         
-        setProducts(selectedProducts);
+        // Extract dominant colors for each product
+        const productsWithColors = await Promise.all(
+          selectedProducts.map(async (product: any) => {
+            const dominantColor = await extractDominantColor(product.images[0]?.src || '');
+            return {
+              id: product.id,
+              title: product.title,
+              price: `₹${product.variants[0]?.price || '0.00'}`,
+              image: product.images[0]?.src || '',
+              handle: product.handle,
+              dominantColor
+            };
+          })
+        );
+        
+        setProducts(productsWithColors);
       } else {
         setError('No products found');
       }
@@ -115,13 +182,27 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
                   className="w-[200px] flex-shrink-0 snap-start"
                 >
                   <div className="bg-white/70 backdrop-blur-md rounded-3xl shadow-lg hover:shadow-xl overflow-hidden transition-all duration-500 h-full hover:scale-105">
-                    <div className="relative">
+                    <div 
+                      className="relative"
+                      style={{
+                        background: product.dominantColor 
+                          ? `linear-gradient(135deg, ${product.dominantColor}15, ${product.dominantColor}08)` 
+                          : 'linear-gradient(135deg, rgb(254, 226, 226), rgb(255, 237, 213))'
+                      }}
+                    >
                       <img 
                         src={product.image} 
                         alt={product.title} 
-                        className="w-full h-48 object-contain bg-gradient-to-br from-red-50 to-orange-50"
+                        className="w-full h-48 object-contain"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-red-100/30 via-transparent to-transparent" />
+                      <div 
+                        className="absolute inset-0 bg-gradient-to-t via-transparent to-transparent"
+                        style={{
+                          background: product.dominantColor 
+                            ? `linear-gradient(to top, ${product.dominantColor}20, transparent)` 
+                            : 'linear-gradient(to top, rgba(248, 113, 113, 0.2), transparent)'
+                        }}
+                      />
                     </div>
                     
                     <div className="p-4">
