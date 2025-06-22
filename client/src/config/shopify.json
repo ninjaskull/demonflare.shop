@@ -1,0 +1,9 @@
+{
+  "domain": "your-shop.myshopify.com",
+  "storefrontAccessToken": "your-storefront-access-token",
+  "productIds": [
+    "gid://shopify/Product/123456789",
+    "gid://shopify/Product/987654321",
+    "gid://shopify/Product/456789123"
+  ]
+}

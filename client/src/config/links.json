@@ -1,0 +1,45 @@
+{
+  "profile": {
+    "name": "Jane Doe",
+    "bio": "Creator • Entrepreneur • Coffee Lover ☕",
+    "avatar": "JD"
+  },
+  "links": [
+    {
+      "title": "My Website",
+      "url": "https://example.com",
+      "icon": "🌐",
+      "gradient": "gradient-primary"
+    },
+    {
+      "title": "Instagram",
+      "url": "https://instagram.com/username",
+      "icon": "📸",
+      "gradient": "gradient-accent"
+    },
+    {
+      "title": "YouTube Channel",
+      "url": "https://youtube.com/@username",
+      "icon": "🎥",
+      "gradient": "gradient-warning"
+    },
+    {
+      "title": "Newsletter",
+      "url": "https://newsletter.example.com",
+      "icon": "📧",
+      "gradient": "gradient-purple"
+    },
+    {
+      "title": "Shop My Store",
+      "url": "https://shop.example.com",
+      "icon": "🛍️",
+      "gradient": "gradient-success"
+    },
+    {
+      "title": "Book a Call",
+      "url": "https://calendly.com/username",
+      "icon": "📅",
+      "gradient": "gradient-secondary"
+    }
+  ]
+}
