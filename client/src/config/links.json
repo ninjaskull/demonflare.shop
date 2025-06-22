@@ -1,39 +1,39 @@
 {
   "profile": {
     "name": "Demonflare",
-    "bio": "Anime Collectibles & Merchandise 🔥",
+    "bio": "Anime Collectibles & Merchandise",
     "avatar": "DF"
   },
   "links": [
     {
       "title": "Visit Our Store",
       "url": "https://demonflare.com",
-      "icon": "⚡",
+      "icon": "store",
       "gradient": "gradient-coral"
     },
     {
       "title": "Instagram",
       "url": "https://www.instagram.com/demonflare.shop/",
-      "icon": "🔥",
+      "icon": "instagram",
       "gradient": "gradient-secondary"
     },
     {
       "title": "All Collections",
       "url": "https://demonflare.com/collections",
-      "icon": "🗾",
+      "icon": "grid",
       "gradient": "gradient-accent"
     },
     {
-      "title": "Contact Us",
-      "url": "https://demonflare.com/pages/contact",
-      "icon": "⭐",
+      "title": "TikTok",
+      "url": "https://tiktok.com/@demonflare",
+      "icon": "tiktok",
       "gradient": "gradient-purple"
     },
     {
-      "title": "About Us",
-      "url": "https://demonflare.com/pages/about",
-      "icon": "🌟",
-      "gradient": "gradient-secondary"
+      "title": "Twitter",
+      "url": "https://twitter.com/demonflare",
+      "icon": "twitter",
+      "gradient": "gradient-warning"
     }
   ]
 }
