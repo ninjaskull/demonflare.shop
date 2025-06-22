@@ -26,7 +26,7 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
     fetchDemonflareProducts();
   }, []);
 
-  const getProductBackgroundColor = () => '#F9FAFB';
+  const getProductBackgroundColor = () => '#e9e9e9';
 
   const fetchDemonflareProducts = async () => {
     try {
@@ -35,7 +35,7 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
       
       if (data.products && data.products.length > 0) {
         const shuffled = data.products.sort(() => 0.5 - Math.random());
-        const selectedProducts = shuffled.slice(0, 4);
+        const selectedProducts = shuffled.slice(0, 6);
         
         const productsWithColors = selectedProducts.map((product: any) => ({
           id: product.id,
@@ -82,13 +82,14 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
         className="relative"
       >
         {loading ? (
-          <div className="flex gap-4 overflow-hidden">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="min-w-[200px] bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+          <div className="grid grid-cols-3 gap-3">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-3">
                 <div className="animate-pulse">
-                  <div className="w-full h-48 bg-gray-100 rounded-xl mb-3"></div>
-                  <div className="h-3 bg-gray-100 rounded w-3/4 mb-2"></div>
-                  <div className="h-3 bg-gray-100 rounded w-1/2"></div>
+                  <div className="w-full h-24 bg-gray-100 rounded-xl mb-2"></div>
+                  <div className="h-2 bg-gray-100 rounded w-3/4 mb-1"></div>
+                  <div className="h-2 bg-gray-100 rounded w-1/2 mb-2"></div>
+                  <div className="h-6 bg-gray-100 rounded"></div>
                 </div>
               </div>
             ))}
@@ -101,51 +102,45 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
             </p>
           </div>
         ) : products.length > 0 ? (
-          <div className="relative -mx-4 px-4">
-            <div className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2" style={{ scrollBehavior: 'smooth' }}>
-              {products.map((product, index) => (
-                <motion.div
-                  key={product.id}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="w-[200px] flex-shrink-0 snap-start"
+          <div className="grid grid-cols-3 gap-3">
+            {products.map((product, index) => (
+              <motion.div
+                key={product.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => handlePurchase(product)}
+                className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md overflow-hidden transition-all duration-200 cursor-pointer"
+              >
+                <div 
+                  className="relative overflow-hidden"
+                  style={{
+                    backgroundColor: product.dominantColor
+                  }}
                 >
-                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md overflow-hidden transition-all duration-300 h-full hover:scale-105">
-                    <div 
-                      className="relative overflow-hidden"
-                      style={{
-                        backgroundColor: product.dominantColor
-                      }}
-                    >
-                      <img 
-                        src={product.image} 
-                        alt={product.title} 
-                        className="w-full h-48 object-contain p-2"
-                      />
-                    </div>
-                    
-                    <div className="p-4">
-                      <h3 className="font-medium text-sm text-gray-900 mb-2 line-clamp-2 min-h-[2.5rem] leading-tight">
-                        {product.title}
-                      </h3>
-                      <p className="text-lg font-semibold text-purple-600 mb-3">
-                        {product.price}
-                      </p>
-                      
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => handlePurchase(product)}
-                        className="w-full bg-purple-600 text-white font-medium py-2.5 px-4 rounded-full hover:bg-purple-700 transition-colors duration-200 text-sm"
-                      >
-                        Shop Now
-                      </motion.button>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+                  <img 
+                    src={product.image} 
+                    alt={product.title} 
+                    className="w-full h-24 object-contain p-1"
+                  />
+                </div>
+                
+                <div className="p-3">
+                  <h3 className="font-medium text-xs text-gray-900 mb-1 line-clamp-2 min-h-[2rem] leading-tight">
+                    {product.title}
+                  </h3>
+                  <p className="text-sm font-semibold text-purple-600 mb-2">
+                    {product.price}
+                  </p>
+                  
+                  <button className="w-full bg-purple-600 text-white font-medium py-1.5 px-2 rounded-full hover:bg-purple-700 transition-colors duration-200 text-xs">
+                    Shop Now
+                  </button>
+                </div>
+              </motion.div>
+            ))}
           </div>
         ) : null}
       </motion.div>
