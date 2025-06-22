@@ -13,10 +13,14 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
       transition={{ duration: 0.8, ease: "easeOut" }}
       className="text-center mb-8"
     >
-      {/* Profile avatar */}
-      <div className="w-32 h-32 mx-auto mb-6 rounded-3xl p-1 gradient-coral shadow-xl">
+      {/* Profile logo */}
+      <div className="w-32 h-32 mx-auto mb-6 rounded-3xl p-3 gradient-coral shadow-xl">
         <div className="w-full h-full rounded-3xl bg-white/90 backdrop-blur-sm flex items-center justify-center">
-          <span className="text-4xl font-bold gradient-coral bg-clip-text text-transparent">{profile.avatar}</span>
+          <img 
+            src="/demonflare-logo.webp" 
+            alt="Demonflare Logo" 
+            className="w-full h-full object-contain"
+          />
         </div>
       </div>
       
