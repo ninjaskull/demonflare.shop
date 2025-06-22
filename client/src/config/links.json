@@ -9,19 +9,19 @@
       "title": "Visit Our Store",
       "url": "https://demonflare.com",
       "icon": "🛍️",
-      "gradient": "gradient-primary"
+      "gradient": "gradient-coral"
     },
     {
       "title": "Instagram",
       "url": "https://instagram.com/demonflare.official",
       "icon": "📸",
-      "gradient": "gradient-accent"
+      "gradient": "gradient-secondary"
     },
     {
       "title": "All Collections",
       "url": "https://demonflare.com/collections",
       "icon": "🎌",
-      "gradient": "gradient-warning"
+      "gradient": "gradient-accent"
     },
     {
       "title": "Contact Us",

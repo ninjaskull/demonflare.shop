@@ -14,14 +14,14 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
       className="text-center mb-8"
     >
       {/* Profile avatar */}
-      <div className="w-28 h-28 mx-auto mb-6 rounded-full p-1 gradient-neon shadow-2xl shadow-primary/50">
-        <div className="w-full h-full rounded-full bg-card flex items-center justify-center border-2 border-primary/30">
-          <span className="text-3xl font-bold gradient-cyber bg-clip-text text-transparent">{profile.avatar}</span>
+      <div className="w-32 h-32 mx-auto mb-6 rounded-3xl p-1 gradient-coral shadow-xl">
+        <div className="w-full h-full rounded-3xl bg-white/90 backdrop-blur-sm flex items-center justify-center">
+          <span className="text-4xl font-bold gradient-coral bg-clip-text text-transparent">{profile.avatar}</span>
         </div>
       </div>
       
-      <h1 className="text-3xl font-bold gradient-cyber bg-clip-text text-transparent mb-3">{profile.name}</h1>
-      <p className="text-muted-foreground text-base">{profile.bio}</p>
+      <h1 className="text-4xl font-bold gradient-coral bg-clip-text text-transparent mb-4">{profile.name}</h1>
+      <p className="text-foreground/70 text-lg font-medium">{profile.bio}</p>
     </motion.div>
   );
 }
