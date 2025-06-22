@@ -22,7 +22,7 @@ const getIcon = (iconName: string) => {
 
 export function LinksList({ links }: LinksListProps) {
   return (
-    <div className="space-y-4 mb-8">
+    <div className="space-y-3 mb-8">
       {links.map((link, index) => {
         const IconComponent = getIcon(link.icon);
         
@@ -32,34 +32,31 @@ export function LinksList({ links }: LinksListProps) {
             href={link.url}
             target="_blank"
             rel="noopener noreferrer"
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ 
-              duration: 0.6, 
+              duration: 0.5, 
               ease: "easeOut",
               delay: index * 0.1 
             }}
             whileHover={{ 
-              y: -3,
-              scale: 1.02,
+              y: -2,
               transition: { duration: 0.2 }
             }}
             whileTap={{ scale: 0.98 }}
-            className="block w-full p-6 bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg hover:shadow-2xl text-center text-card-foreground no-underline relative overflow-hidden group transition-all duration-300 border border-white/30"
+            className="flex items-center w-full px-4 py-4 bg-white rounded-full shadow-sm hover:shadow-md text-gray-900 no-underline transition-all duration-200 border border-gray-100 group"
           >
-            <div className="flex items-center justify-center space-x-4 relative z-10">
-              <div className="p-2 rounded-xl bg-white/50 backdrop-blur-sm shadow-md group-hover:scale-110 transition-transform duration-300">
-                <IconComponent size={28} className="text-foreground drop-shadow-sm" />
+            <div className="flex items-center space-x-3 w-full">
+              <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                <IconComponent size={18} className="text-gray-700" />
               </div>
-              <span className="font-bold text-xl text-foreground">{link.title}</span>
+              <span className="font-medium text-gray-900 flex-1">{link.title}</span>
+              <div className="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <svg className="w-3 h-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
             </div>
-            
-            {/* Enhanced gradient overlay on hover */}
-            <div className={`absolute inset-0 ${link.gradient} opacity-0 group-hover:opacity-20 rounded-2xl transition-all duration-300`} />
-            <div className="absolute inset-0 bg-gradient-to-r from-white/10 via-white/30 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
-            
-            {/* Animated border effect */}
-            <div className="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-white/40 transition-all duration-300" />
           </motion.a>
         );
       })}
