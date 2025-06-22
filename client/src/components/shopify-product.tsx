@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ShopifyConfig } from "@/types/config";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ShopifyProductProps {
   config: ShopifyConfig;
@@ -21,6 +22,7 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     fetchDemonflareProducts();
@@ -96,69 +98,86 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
           <div className="relative">
             {/* Carousel Container */}
             <div className="relative overflow-hidden rounded-2xl">
-              {/* Fade overlays */}
-              <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none"></div>
-              <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-gray-50 to-transparent z-10 pointer-events-none"></div>
+              {/* Fade overlays - hidden on mobile for better visibility */}
+              <div className="absolute left-0 top-0 bottom-0 w-8 md:w-16 bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none hidden sm:block"></div>
+              <div className="absolute right-0 top-0 bottom-0 w-8 md:w-16 bg-gradient-to-l from-gray-50 to-transparent z-10 pointer-events-none hidden sm:block"></div>
               
               {/* Products Container */}
-              <div 
-                className="flex transition-transform duration-500 ease-in-out"
-                style={{ transform: `translateX(-${currentIndex * 200}px)` }}
-              >
-                {products.map((product, index) => {
-                  const isActive = index === currentIndex;
-                  const isVisible = index >= currentIndex - 1 && index <= currentIndex + 2;
-                  
-                  if (!isVisible) return null;
-                  
-                  return (
-                    <motion.div
-                      key={product.id}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                      className="w-48 flex-shrink-0 p-2"
-                    >
-                      <div 
-                        className={`bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 cursor-pointer ${
-                          isActive ? 'shadow-lg scale-105 ring-2 ring-purple-100' : 'hover:shadow-md hover:scale-102'
-                        }`}
-                        onClick={() => handlePurchase(product)}
+              <div className="flex justify-center">
+                <div 
+                  className="flex transition-transform duration-500 ease-in-out gap-2 md:gap-4"
+                  style={{ 
+                    transform: `translateX(-${currentIndex * (isMobile ? 180 : 200)}px)` 
+                  }}
+                >
+                  {products.map((product, index) => {
+                    // For mobile: show current and next product (2 products)
+                    // For desktop: show previous, current, and next product (3 products)
+                    const visibleStart = isMobile ? currentIndex : Math.max(0, currentIndex - 1);
+                    const visibleEnd = isMobile ? currentIndex + 1 : Math.min(products.length - 1, currentIndex + 1);
+                    const isVisible = index >= visibleStart && index <= visibleEnd;
+                    
+                    if (!isVisible) return null;
+                    
+                    const isCenter = index === currentIndex;
+                    
+                    return (
+                      <motion.div
+                        key={product.id}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                        className="w-40 sm:w-44 md:w-48 flex-shrink-0 p-1 md:p-2"
                       >
                         <div 
-                          className="relative overflow-hidden h-32"
-                          style={{
-                            backgroundColor: product.dominantColor
+                          className={`bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 cursor-pointer ${
+                            isCenter 
+                              ? 'shadow-lg scale-105 ring-2 ring-purple-100 md:scale-110' 
+                              : 'hover:shadow-md hover:scale-102 opacity-75 md:opacity-90'
+                          }`}
+                          onClick={() => {
+                            if (isCenter) {
+                              handlePurchase(product);
+                            } else {
+                              setCurrentIndex(index);
+                            }
                           }}
                         >
-                          <img 
-                            src={product.image} 
-                            alt={product.title} 
-                            className="w-full h-full object-contain p-2"
-                          />
-                          {isActive && (
-                            <div className="absolute top-2 right-2 bg-purple-500 text-white text-xs px-2 py-1 rounded-full">
-                              Featured
-                            </div>
-                          )}
-                        </div>
-                        
-                        <div className="p-4">
-                          <h3 className="font-medium text-sm text-gray-900 mb-2 line-clamp-2 min-h-[2.5rem] leading-tight">
-                            {product.title}
-                          </h3>
-                          <p className="text-lg font-semibold text-purple-600 mb-3">
-                            {product.price}
-                          </p>
+                          <div 
+                            className="relative overflow-hidden h-24 sm:h-28 md:h-32"
+                            style={{
+                              backgroundColor: product.dominantColor
+                            }}
+                          >
+                            <img 
+                              src={product.image} 
+                              alt={product.title} 
+                              className="w-full h-full object-contain p-1 md:p-2"
+                            />
+                            {isCenter && (
+                              <div className="absolute top-1 right-1 md:top-2 md:right-2 bg-purple-500 text-white text-xs px-1.5 py-0.5 md:px-2 md:py-1 rounded-full">
+                                Featured
+                              </div>
+                            )}
+                          </div>
                           
-                          <button className="w-full bg-purple-600 text-white font-medium py-2 px-4 rounded-full hover:bg-purple-700 transition-colors duration-200 text-sm">
-                            Shop Now
-                          </button>
+                          <div className="p-2 md:p-4">
+                            <h3 className="font-medium text-xs md:text-sm text-gray-900 mb-1 md:mb-2 line-clamp-2 min-h-[1.5rem] md:min-h-[2.5rem] leading-tight">
+                              {product.title}
+                            </h3>
+                            <p className="text-sm md:text-lg font-semibold text-purple-600 mb-2 md:mb-3">
+                              {product.price}
+                            </p>
+                            
+                            <button className="w-full bg-purple-600 text-white font-medium py-1.5 md:py-2 px-2 md:px-4 rounded-full hover:bg-purple-700 transition-colors duration-200 text-xs md:text-sm">
+                              Shop Now
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    </motion.div>
-                  );
-                })}
+                      </motion.div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
             
@@ -167,9 +186,9 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
               <button
                 onClick={prevProduct}
                 disabled={currentIndex === 0}
-                className="ml-2 bg-white/90 hover:bg-white p-2 rounded-full shadow-md transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed z-20"
+                className="ml-1 md:ml-2 bg-white/90 hover:bg-white p-1.5 md:p-2 rounded-full shadow-md transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed z-20"
               >
-                <ChevronLeft className="w-4 h-4 text-gray-700" />
+                <ChevronLeft className="w-3 h-3 md:w-4 md:h-4 text-gray-700" />
               </button>
             </div>
             
@@ -177,19 +196,19 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
               <button
                 onClick={nextProduct}
                 disabled={currentIndex >= products.length - 1}
-                className="mr-2 bg-white/90 hover:bg-white p-2 rounded-full shadow-md transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed z-20"
+                className="mr-1 md:mr-2 bg-white/90 hover:bg-white p-1.5 md:p-2 rounded-full shadow-md transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed z-20"
               >
-                <ChevronRight className="w-4 h-4 text-gray-700" />
+                <ChevronRight className="w-3 h-3 md:w-4 md:h-4 text-gray-700" />
               </button>
             </div>
             
             {/* Dots indicator */}
-            <div className="flex justify-center space-x-2 mt-4">
+            <div className="flex justify-center space-x-1.5 md:space-x-2 mt-3 md:mt-4">
               {products.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentIndex(index)}
-                  className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                  className={`w-1.5 h-1.5 md:w-2 md:h-2 rounded-full transition-all duration-200 ${
                     index === currentIndex 
                       ? 'bg-purple-600 scale-125' 
                       : 'bg-gray-300 hover:bg-gray-400'
