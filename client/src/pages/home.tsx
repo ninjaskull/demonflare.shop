@@ -12,7 +12,7 @@ export default function Home() {
       
       {/* Main Container */}
       <div className="relative z-10 min-h-screen py-8 px-4">
-        <div className="max-w-md mx-auto">
+        <div className="max-w-md mx-auto overflow-hidden">
           
           {/* Profile Section */}
           <ProfileHeader profile={linksConfig.profile} />

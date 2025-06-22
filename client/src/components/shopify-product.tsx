@@ -103,32 +103,32 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
             </p>
           </div>
         ) : products.length > 0 ? (
-          <div className="relative">
+          <div className="relative -mx-4 px-4">
             {/* Horizontal Scrolling Carousel */}
-            <div className="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2">
+            <div className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2" style={{ scrollBehavior: 'smooth' }}>
               {products.map((product, index) => (
                 <motion.div
                   key={product.id}
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="min-w-[200px] flex-shrink-0 snap-start"
+                  className="w-[180px] flex-shrink-0 snap-start"
                 >
-                  <div className="bg-card rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                  <div className="bg-card rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 h-full">
                     <div className="relative">
                       <img 
                         src={product.image} 
                         alt={product.title} 
-                        className="w-full h-48 object-cover"
+                        className="w-full h-36 object-cover"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                     </div>
                     
-                    <div className="p-4">
-                      <h3 className="font-semibold text-sm text-card-foreground mb-2 line-clamp-2 min-h-[2.5rem]">
+                    <div className="p-3">
+                      <h3 className="font-semibold text-xs text-card-foreground mb-2 line-clamp-2 min-h-[2rem] leading-tight">
                         {product.title}
                       </h3>
-                      <p className="text-lg font-bold text-primary mb-3">
+                      <p className="text-sm font-bold text-primary mb-2">
                         {product.price}
                       </p>
                       
@@ -136,7 +136,7 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => handlePurchase(product)}
-                        className="w-full gradient-primary text-white text-sm font-semibold py-2.5 px-4 rounded-xl hover:shadow-lg transition-shadow duration-300"
+                        className="w-full gradient-primary text-white text-xs font-semibold py-2 px-3 rounded-lg hover:shadow-lg transition-shadow duration-300"
                       >
                         View Product
                       </motion.button>
