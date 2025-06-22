@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ShopifyConfig } from "@/types/config";
 
 interface ShopifyProductProps {
@@ -12,6 +13,7 @@ interface Product {
   price: string;
   image: string;
   handle: string;
+  dominantColor?: string;
 }
 
 export function ShopifyProduct({ config }: ShopifyProductProps) {
@@ -24,6 +26,8 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
     fetchDemonflareProducts();
   }, []);
 
+  const getProductBackgroundColor = () => '#F9FAFB';
+
   const fetchDemonflareProducts = async () => {
     try {
       const response = await fetch('https://demonflare.com/products.json');
@@ -31,17 +35,18 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
       
       if (data.products && data.products.length > 0) {
         const shuffled = data.products.sort(() => 0.5 - Math.random());
-        const selectedProducts = shuffled.slice(0, 3);
+        const selectedProducts = shuffled.slice(0, 4);
         
-        const productsWithFormattedPrice = selectedProducts.map((product: any) => ({
+        const productsWithColors = selectedProducts.map((product: any) => ({
           id: product.id,
           title: product.title,
           price: `₹${product.variants[0]?.price || '0.00'}`,
           image: product.images[0]?.src || '',
           handle: product.handle,
+          dominantColor: getProductBackgroundColor()
         }));
         
-        setProducts(productsWithFormattedPrice);
+        setProducts(productsWithColors);
       } else {
         setError('No products found');
       }
@@ -49,7 +54,7 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
       setLoading(false);
     } catch (err) {
       console.error('Error loading products:', err);
-      setError('Failed to load products');
+      setError('Failed to load products from demonflare.com');
       setLoading(false);
     }
   };
@@ -58,68 +63,92 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
     window.open(`https://demonflare.com/products/${product.handle}`, '_blank');
   };
 
-  if (loading) {
-    return (
-      <div className="mb-8">
-        <div className="flex justify-center items-center h-32">
-          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-500"></div>
-        </div>
-      </div>
-    );
-  }
+  const nextProduct = () => {
+    setCurrentIndex((prev) => (prev + 1) % products.length);
+  };
 
-  if (error || products.length === 0) {
-    return null;
-  }
+  const prevProduct = () => {
+    setCurrentIndex((prev) => (prev - 1 + products.length) % products.length);
+  };
 
   return (
     <div className="mb-8">
-      <div className="grid grid-cols-1 gap-3">
-        {products.slice(0, 2).map((product, index) => (
-          <motion.div
-            key={product.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ 
-              duration: 0.5, 
-              delay: index * 0.1 
-            }}
-            whileHover={{ y: -2 }}
-            className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group cursor-pointer"
-            onClick={() => handlePurchase(product)}
-          >
-            <div className="flex">
-              <div className="w-20 h-20 bg-gray-50 flex items-center justify-center flex-shrink-0">
-                <img
-                  src={product.image}
-                  alt={product.title}
-                  className="w-full h-full object-contain p-2"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
-              </div>
-              
-              <div className="flex-1 p-4 flex items-center justify-between">
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-medium text-gray-900 text-sm truncate pr-2">
-                    {product.title}
-                  </h3>
-                  <p className="text-purple-600 font-semibold text-sm mt-1">
-                    {product.price}
-                  </p>
-                </div>
-                
-                <div className="w-6 h-6 rounded-full bg-gray-100 group-hover:bg-purple-100 flex items-center justify-center transition-colors duration-200 flex-shrink-0">
-                  <svg className="w-3 h-3 text-gray-600 group-hover:text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+      <h2 className="text-xl font-semibold text-gray-900 mb-6 text-center">Featured Products</h2>
+      
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
+        className="relative"
+      >
+        {loading ? (
+          <div className="flex gap-4 overflow-hidden">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="min-w-[200px] bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+                <div className="animate-pulse">
+                  <div className="w-full h-48 bg-gray-100 rounded-xl mb-3"></div>
+                  <div className="h-3 bg-gray-100 rounded w-3/4 mb-2"></div>
+                  <div className="h-3 bg-gray-100 rounded w-1/2"></div>
                 </div>
               </div>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-center">
+            <p className="text-red-500 mb-2 font-medium">{error}</p>
+            <p className="text-xs text-gray-500">
+              Failed to load products from demonflare.com
+            </p>
+          </div>
+        ) : products.length > 0 ? (
+          <div className="relative -mx-4 px-4">
+            <div className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2" style={{ scrollBehavior: 'smooth' }}>
+              {products.map((product, index) => (
+                <motion.div
+                  key={product.id}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  className="w-[200px] flex-shrink-0 snap-start"
+                >
+                  <div className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md overflow-hidden transition-all duration-300 h-full hover:scale-105">
+                    <div 
+                      className="relative overflow-hidden"
+                      style={{
+                        backgroundColor: product.dominantColor
+                      }}
+                    >
+                      <img 
+                        src={product.image} 
+                        alt={product.title} 
+                        className="w-full h-48 object-contain p-2"
+                      />
+                    </div>
+                    
+                    <div className="p-4">
+                      <h3 className="font-medium text-sm text-gray-900 mb-2 line-clamp-2 min-h-[2.5rem] leading-tight">
+                        {product.title}
+                      </h3>
+                      <p className="text-lg font-semibold text-purple-600 mb-3">
+                        {product.price}
+                      </p>
+                      
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => handlePurchase(product)}
+                        className="w-full bg-purple-600 text-white font-medium py-2.5 px-4 rounded-full hover:bg-purple-700 transition-colors duration-200 text-sm"
+                      >
+                        Shop Now
+                      </motion.button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
             </div>
-          </motion.div>
-        ))}
-      </div>
+          </div>
+        ) : null}
+      </motion.div>
     </div>
   );
 }
