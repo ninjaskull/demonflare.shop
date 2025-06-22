@@ -27,7 +27,7 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
   }, []);
 
   // Use consistent background color matching product images
-  const getProductBackgroundColor = () => '#E7E7E7';
+  const getProductBackgroundColor = () => '#E5E5E5';
 
   const fetchDemonflareProducts = async () => {
     try {
