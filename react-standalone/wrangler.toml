@@ -1,0 +1,10 @@
+name = "demonflare-react"
+compatibility_date = "2023-12-01"
+
+[env.production]
+account_id = ""
+zone_id = ""
+
+[[env.production.routes]]
+pattern = "your-domain.com/*"
+zone_name = "your-domain.com"

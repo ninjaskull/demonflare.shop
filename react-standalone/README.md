@@ -39,11 +39,59 @@ Edit `src/config/config.ts` to customize:
 
 ## Deployment
 
-This is a standard React + Vite application that can be deployed to:
-- Vercel
-- Netlify
-- GitHub Pages
-- Any static hosting service
+### Cloudflare Pages (Recommended)
+
+#### Method 1: Using Wrangler CLI
+
+1. **Install Wrangler globally:**
+   ```bash
+   npm install -g wrangler
+   ```
+
+2. **Login to Cloudflare:**
+   ```bash
+   wrangler login
+   ```
+
+3. **Deploy directly:**
+   ```bash
+   npm run deploy
+   ```
+
+#### Method 2: Git Integration (Automatic)
+
+1. **Push your code to GitHub/GitLab**
+
+2. **Connect to Cloudflare Pages:**
+   - Go to [Cloudflare Dashboard](https://dash.cloudflare.com)
+   - Navigate to Pages
+   - Click "Create a project"
+   - Connect your Git repository
+   
+3. **Build Settings:**
+   - Build command: `npm run build`
+   - Build output directory: `dist`
+   - Node.js version: `18` or `20`
+
+#### Method 3: Direct Upload
+
+1. **Build the project:**
+   ```bash
+   npm run build
+   ```
+
+2. **Upload the `dist` folder:**
+   - Go to Cloudflare Pages dashboard
+   - Click "Upload assets"
+   - Drag and drop the `dist` folder
+
+### Other Hosting Options
+
+This application can also be deployed to:
+- **Vercel:** Connect GitHub repo, auto-deploys
+- **Netlify:** Drag and drop `dist` folder or Git integration
+- **GitHub Pages:** Enable in repository settings
+- **Any static hosting service**
 
 ## Tech Stack
 
