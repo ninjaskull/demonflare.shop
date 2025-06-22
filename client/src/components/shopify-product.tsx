@@ -32,8 +32,6 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
 
   const fetchDemonflareProducts = async () => {
     try {
-
-      
       // Try the main API first
       let response = await fetch('https://demonflare.com/products.json', {
         mode: 'cors',
@@ -43,7 +41,6 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
       });
       
       if (!response.ok) {
-
         // Try alternative endpoint
         response = await fetch('https://demonflare.com/collections/all/products.json', {
           mode: 'cors',
@@ -58,12 +55,10 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
       }
       
       const data = await response.json();
-
       
       if (data.products && Array.isArray(data.products) && data.products.length > 0) {
-
-        const shuffled = data.products.sort(() => 0.5 - Math.random());
-        const selectedProducts = shuffled.slice(0, 6);
+        // Take first 6 products without shuffling for consistency
+        const selectedProducts = data.products.slice(0, 6);
         
         const productsWithColors = selectedProducts.map((product: any) => ({
           id: product.id,
@@ -76,15 +71,12 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
         
         setProducts(productsWithColors);
       } else {
-
         setError('No products found');
       }
       
       setLoading(false);
     } catch (err) {
       console.error('Error loading products:', err);
-
-      
       setError(`Failed to load products: ${err instanceof Error ? err.message : 'Unknown error'}`);
       setLoading(false);
     }
@@ -100,6 +92,38 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
 
   const prevProduct = () => {
     setCurrentIndex((prev) => (prev - 1 + products.length) % products.length);
+  };
+
+  const getVisibleProducts = () => {
+    if (products.length === 0) return [];
+    
+    const visibleProducts = [];
+    
+    if (isMobile) {
+      // Mobile: show current and next (2 products)
+      for (let i = 0; i < 2; i++) {
+        const productIndex = (currentIndex + i) % products.length;
+        visibleProducts.push({
+          product: products[productIndex],
+          index: productIndex,
+          position: i,
+          isCenter: i === 0
+        });
+      }
+    } else {
+      // Desktop: show previous, current, next (3 products)
+      for (let i = -1; i <= 1; i++) {
+        const productIndex = (currentIndex + i + products.length) % products.length;
+        visibleProducts.push({
+          product: products[productIndex],
+          index: productIndex,
+          position: i,
+          isCenter: i === 0
+        });
+      }
+    }
+    
+    return visibleProducts;
   };
 
   return (
@@ -132,80 +156,66 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
               <div className="absolute right-0 top-0 bottom-0 w-8 md:w-16 bg-gradient-to-l from-gray-50 to-transparent z-10 pointer-events-none hidden sm:block"></div>
               
               {/* Products Container */}
-              <div className="flex justify-center">
-                <div 
-                  className="flex transition-transform duration-500 ease-in-out gap-2 md:gap-4"
-                  style={{ 
-                    transform: `translateX(-${currentIndex * (isMobile ? 180 : 200)}px)` 
-                  }}
-                >
-                  {products.map((product, index) => {
-                    // For mobile: show current and next product (2 products)
-                    // For desktop: show previous, current, and next product (3 products)
-                    const visibleStart = isMobile ? currentIndex : Math.max(0, currentIndex - 1);
-                    const visibleEnd = isMobile ? currentIndex + 1 : Math.min(products.length - 1, currentIndex + 1);
-                    const isVisible = index >= visibleStart && index <= visibleEnd;
-                    
-                    if (!isVisible) return null;
-                    
-                    const isCenter = index === currentIndex;
-                    
-                    return (
-                      <motion.div
-                        key={product.id}
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.5, delay: index * 0.1 }}
-                        className="w-40 sm:w-44 md:w-48 flex-shrink-0 p-1 md:p-2"
+              <div className="flex justify-center items-center py-4 px-8">
+                <div className="flex gap-4">
+                  {getVisibleProducts().map(({ product, index, position, isCenter }) => (
+                    <motion.div
+                      key={`${product.id}-${currentIndex}`}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ 
+                        opacity: isCenter ? 1 : (isMobile ? 0.7 : 0.8),
+                        scale: isCenter ? (isMobile ? 1.05 : 1.1) : 0.95
+                      }}
+                      transition={{ duration: 0.3 }}
+                      className="w-40 sm:w-44 md:w-48 flex-shrink-0"
+                    >
+                      <div 
+                        className={`bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 cursor-pointer ${
+                          isCenter 
+                            ? 'shadow-lg ring-2 ring-purple-100' 
+                            : 'hover:shadow-md hover:scale-102'
+                        }`}
+                        onClick={() => {
+                          if (isCenter) {
+                            handlePurchase(product);
+                          } else {
+                            setCurrentIndex(index);
+                          }
+                        }}
                       >
                         <div 
-                          className={`bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 cursor-pointer ${
-                            isCenter 
-                              ? 'shadow-lg scale-105 ring-2 ring-purple-100 md:scale-110' 
-                              : 'hover:shadow-md hover:scale-102 opacity-75 md:opacity-90'
-                          }`}
-                          onClick={() => {
-                            if (isCenter) {
-                              handlePurchase(product);
-                            } else {
-                              setCurrentIndex(index);
-                            }
+                          className="relative overflow-hidden h-24 sm:h-28 md:h-32"
+                          style={{
+                            backgroundColor: product.dominantColor
                           }}
                         >
-                          <div 
-                            className="relative overflow-hidden h-24 sm:h-28 md:h-32"
-                            style={{
-                              backgroundColor: product.dominantColor
-                            }}
-                          >
-                            <img 
-                              src={product.image} 
-                              alt={product.title} 
-                              className="w-full h-full object-contain p-1 md:p-2"
-                            />
-                            {isCenter && (
-                              <div className="absolute top-1 right-1 md:top-2 md:right-2 bg-purple-500 text-white text-xs px-1.5 py-0.5 md:px-2 md:py-1 rounded-full">
-                                Featured
-                              </div>
-                            )}
-                          </div>
-                          
-                          <div className="p-2 md:p-4">
-                            <h3 className="font-medium text-xs md:text-sm text-gray-900 mb-1 md:mb-2 line-clamp-2 min-h-[1.5rem] md:min-h-[2.5rem] leading-tight">
-                              {product.title}
-                            </h3>
-                            <p className="text-sm md:text-lg font-semibold text-purple-600 mb-2 md:mb-3">
-                              {product.price}
-                            </p>
-                            
-                            <button className="w-full bg-purple-600 text-white font-medium py-1.5 md:py-2 px-2 md:px-4 rounded-full hover:bg-purple-700 transition-colors duration-200 text-xs md:text-sm">
-                              Shop Now
-                            </button>
-                          </div>
+                          <img 
+                            src={product.image} 
+                            alt={product.title} 
+                            className="w-full h-full object-contain p-1 md:p-2"
+                          />
+                          {isCenter && (
+                            <div className="absolute top-1 right-1 md:top-2 md:right-2 bg-purple-500 text-white text-xs px-1.5 py-0.5 md:px-2 md:py-1 rounded-full">
+                              Featured
+                            </div>
+                          )}
                         </div>
-                      </motion.div>
-                    );
-                  })}
+                        
+                        <div className="p-2 md:p-4">
+                          <h3 className="font-medium text-xs md:text-sm text-gray-900 mb-1 md:mb-2 line-clamp-2 min-h-[1.5rem] md:min-h-[2.5rem] leading-tight">
+                            {product.title}
+                          </h3>
+                          <p className="text-sm md:text-lg font-semibold text-purple-600 mb-2 md:mb-3">
+                            {product.price}
+                          </p>
+                          
+                          <button className="w-full bg-purple-600 text-white font-medium py-1.5 md:py-2 px-2 md:px-4 rounded-full hover:bg-purple-700 transition-colors duration-200 text-xs md:text-sm">
+                            Shop Now
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -214,8 +224,7 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
             <div className="absolute inset-y-0 left-0 flex items-center">
               <button
                 onClick={prevProduct}
-                disabled={currentIndex === 0}
-                className="ml-1 md:ml-2 bg-white/90 hover:bg-white p-1.5 md:p-2 rounded-full shadow-md transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed z-20"
+                className="ml-1 md:ml-2 bg-white/90 hover:bg-white p-1.5 md:p-2 rounded-full shadow-md transition-all duration-200 hover:scale-110 z-20"
               >
                 <ChevronLeft className="w-3 h-3 md:w-4 md:h-4 text-gray-700" />
               </button>
@@ -224,8 +233,7 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
             <div className="absolute inset-y-0 right-0 flex items-center">
               <button
                 onClick={nextProduct}
-                disabled={currentIndex >= products.length - 1}
-                className="mr-1 md:mr-2 bg-white/90 hover:bg-white p-1.5 md:p-2 rounded-full shadow-md transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed z-20"
+                className="mr-1 md:mr-2 bg-white/90 hover:bg-white p-1.5 md:p-2 rounded-full shadow-md transition-all duration-200 hover:scale-110 z-20"
               >
                 <ChevronRight className="w-3 h-3 md:w-4 md:h-4 text-gray-700" />
               </button>
