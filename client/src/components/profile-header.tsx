@@ -13,21 +13,26 @@ export function ProfileHeader({ profile }: ProfileHeaderProps) {
       transition={{ duration: 0.8, ease: "easeOut" }}
       className="text-center mb-12"
     >
-      {/* Clean circular profile image */}
+      {/* Clean circular profile image with eye-catching gradient */}
       <motion.div 
-        className="w-24 h-24 mx-auto mb-6 rounded-full overflow-hidden shadow-lg bg-gradient-to-br from-purple-400 to-blue-500"
+        className="w-24 h-24 mx-auto mb-6 rounded-full overflow-hidden shadow-xl relative"
+        style={{
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+        }}
         whileHover={{ 
           scale: 1.05,
           transition: { duration: 0.3 }
         }}
       >
-        <div className="w-full h-full bg-white/10 backdrop-blur-sm flex items-center justify-center">
+        <div className="w-full h-full bg-white/15 backdrop-blur-sm flex items-center justify-center relative z-10">
           <img 
             src="/demonflare-logo.webp" 
             alt="Demonflare Logo" 
-            className="w-full h-full object-cover"
+            className="w-16 h-16 object-contain filter drop-shadow-md"
           />
         </div>
+        {/* Animated glow effect */}
+        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 opacity-75 animate-pulse"></div>
       </motion.div>
       
       {/* Clean name styling */}
