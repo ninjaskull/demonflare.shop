@@ -26,105 +26,8 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
     fetchDemonflareProducts();
   }, []);
 
-  const extractDominantColor = (imageSrc: string): Promise<string> => {
-    return new Promise((resolve) => {
-      const img = new Image();
-      
-      img.onload = () => {
-        try {
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          
-          if (!ctx) {
-            resolve('rgb(248, 113, 113)');
-            return;
-          }
-          
-          // Use smaller canvas for better performance
-          const size = 100;
-          canvas.width = size;
-          canvas.height = size;
-          ctx.drawImage(img, 0, 0, size, size);
-          
-          const imageData = ctx.getImageData(0, 0, size, size);
-          const data = imageData.data;
-          
-          // Color frequency map
-          const colorMap = new Map<string, number>();
-          
-          // Sample pixels and count colors
-          for (let i = 0; i < data.length; i += 16) { // Sample every 4th pixel
-            const r = data[i];
-            const g = data[i + 1];
-            const b = data[i + 2];
-            const alpha = data[i + 3];
-            
-            // Skip transparent or very light pixels
-            if (alpha < 200 || r + g + b > 650) continue;
-            
-            // Group similar colors together (reduce precision)
-            const rGroup = Math.floor(r / 32) * 32;
-            const gGroup = Math.floor(g / 32) * 32;
-            const bGroup = Math.floor(b / 32) * 32;
-            
-            const colorKey = `${rGroup},${gGroup},${bGroup}`;
-            colorMap.set(colorKey, (colorMap.get(colorKey) || 0) + 1);
-          }
-          
-          if (colorMap.size === 0) {
-            resolve('rgb(248, 113, 113)');
-            return;
-          }
-          
-          // Find the most frequent color
-          let maxCount = 0;
-          let dominantColor = 'rgb(248, 113, 113)';
-          
-          // Sort colors by frequency and pick the most vibrant one
-          const sortedColors = Array.from(colorMap.entries())
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 3); // Take top 3 colors
-          
-          // Choose the most vibrant color among top frequent ones
-          for (const [color, count] of sortedColors) {
-            const [r, g, b] = color.split(',').map(Number);
-            
-            // Calculate color vibrancy (saturation)
-            const max = Math.max(r, g, b);
-            const min = Math.min(r, g, b);
-            const saturation = max === 0 ? 0 : (max - min) / max;
-            
-            // Prefer colors with higher saturation and reasonable frequency
-            if (count > maxCount * 0.7 && saturation > 0.3) {
-              maxCount = count;
-              dominantColor = `rgb(${r}, ${g}, ${b})`;
-              break;
-            }
-          }
-          
-          // If no vibrant color found, use the most frequent one
-          if (dominantColor === 'rgb(248, 113, 113)' && sortedColors.length > 0) {
-            const [r, g, b] = sortedColors[0][0].split(',').map(Number);
-            dominantColor = `rgb(${r}, ${g}, ${b})`;
-          }
-          
-          console.log(`Extracted color: ${dominantColor} from ${sortedColors.length} color groups`);
-          resolve(dominantColor);
-        } catch (error) {
-          console.error('Error extracting color:', error);
-          resolve('rgb(248, 113, 113)');
-        }
-      };
-      
-      img.onerror = () => {
-        resolve('rgb(248, 113, 113)');
-      };
-      
-      // Use proxy to avoid CORS issues
-      img.crossOrigin = 'anonymous';
-      img.src = imageSrc;
-    });
-  };
+  // Use consistent background color matching product images
+  const getProductBackgroundColor = () => '#E7E7E7';
 
   const fetchDemonflareProducts = async () => {
     try {
@@ -137,21 +40,15 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
         const shuffled = data.products.sort(() => 0.5 - Math.random());
         const selectedProducts = shuffled.slice(0, 4);
         
-        // Extract dominant colors for each product
-        const productsWithColors = await Promise.all(
-          selectedProducts.map(async (product: any, index: number) => {
-            const dominantColor = await extractDominantColor(product.images[0]?.src || '');
-            console.log(`Product ${index}: ${product.title} - Color: ${dominantColor}`);
-            return {
-              id: product.id,
-              title: product.title,
-              price: `₹${product.variants[0]?.price || '0.00'}`,
-              image: product.images[0]?.src || '',
-              handle: product.handle,
-              dominantColor
-            };
-          })
-        );
+        // Use consistent background color for all products
+        const productsWithColors = selectedProducts.map((product: any) => ({
+          id: product.id,
+          title: product.title,
+          price: `₹${product.variants[0]?.price || '0.00'}`,
+          image: product.images[0]?.src || '',
+          handle: product.handle,
+          dominantColor: getProductBackgroundColor()
+        }));
         
         setProducts(productsWithColors);
       } else {
@@ -229,23 +126,13 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
                     <div 
                       className="relative overflow-hidden"
                       style={{
-                        background: product.dominantColor 
-                          ? `linear-gradient(135deg, ${product.dominantColor.replace('rgb(', 'rgba(').replace(')', ', 0.15)')}, ${product.dominantColor.replace('rgb(', 'rgba(').replace(')', ', 0.05)')})` 
-                          : 'linear-gradient(135deg, rgba(248, 113, 113, 0.15), rgba(255, 165, 0, 0.05))'
+                        backgroundColor: product.dominantColor
                       }}
                     >
                       <img 
                         src={product.image} 
                         alt={product.title} 
                         className="w-full h-48 object-contain p-2"
-                      />
-                      <div 
-                        className="absolute inset-0 pointer-events-none"
-                        style={{
-                          background: product.dominantColor 
-                            ? `radial-gradient(circle at center bottom, ${product.dominantColor.replace('rgb(', 'rgba(').replace(')', ', 0.2)')}, transparent 70%)` 
-                            : 'radial-gradient(circle at center bottom, rgba(248, 113, 113, 0.2), transparent 70%)'
-                        }}
                       />
                     </div>
                     
