@@ -144,4 +144,25 @@
   .animate-float {
     animation: float 6s ease-in-out infinite;
   }
+
+  /* Enhanced pulse animation */
+  @keyframes enhanced-pulse {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.05); }
+  }
+  
+  .animate-enhanced-pulse {
+    animation: enhanced-pulse 3s ease-in-out infinite;
+  }
+
+  /* Gentle sway animation */
+  @keyframes sway {
+    0%, 100% { transform: translateX(0px) rotate(0deg); }
+    25% { transform: translateX(3px) rotate(1deg); }
+    75% { transform: translateX(-3px) rotate(-1deg); }
+  }
+  
+  .animate-sway {
+    animation: sway 4s ease-in-out infinite;
+  }
 }
