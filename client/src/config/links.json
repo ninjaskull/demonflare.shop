@@ -34,6 +34,12 @@
       "url": "https://facebook.com/thedemonflare",
       "icon": "facebook",
       "gradient": "gradient-purple"
+    },
+    {
+      "title": "WhatsApp Support",
+      "url": "https://wa.me/917588993347",
+      "icon": "whatsapp",
+      "gradient": "gradient-success"
     }
   ]
 }

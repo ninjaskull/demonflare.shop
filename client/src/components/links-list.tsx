@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { LinkConfig } from "@/types/config";
 import { Store, Instagram, Grid3X3, Music, Twitter, ExternalLink } from "lucide-react";
-import { SiFacebook } from "react-icons/si";
+import { SiFacebook, SiWhatsapp } from "react-icons/si";
 
 interface LinksListProps {
   links: LinkConfig[];
@@ -14,6 +14,7 @@ const getIcon = (iconName: string) => {
     grid: Grid3X3,
     facebook: SiFacebook,
     twitter: Twitter,
+    whatsapp: SiWhatsapp,
     music: Music,
   };
   
