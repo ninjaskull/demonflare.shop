@@ -119,9 +119,9 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
                       <img 
                         src={product.image} 
                         alt={product.title} 
-                        className="w-full h-48 object-contain bg-gradient-to-br from-pink-50 to-orange-50"
+                        className="w-full h-48 object-contain bg-gradient-to-br from-red-50 to-orange-50"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-orange-100/30 via-transparent to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-red-100/30 via-transparent to-transparent" />
                     </div>
                     
                     <div className="p-4">
