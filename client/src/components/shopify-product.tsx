@@ -93,123 +93,98 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
             </p>
           </div>
         ) : products.length > 0 ? (
-          <div className="relative h-80 overflow-hidden perspective-1000">
-            <div className="relative w-full h-full preserve-3d">
-              {products.map((product, index) => {
-                const angle = (index / products.length) * 360;
-                const isActive = index === currentIndex;
-                const nextIndex = (currentIndex + 1) % products.length;
-                const prevIndex = (currentIndex - 1 + products.length) % products.length;
-                
-                let zIndex = 1;
-                let scale = 0.8;
-                let opacity = 0.6;
-                
-                if (isActive) {
-                  zIndex = 10;
-                  scale = 1;
-                  opacity = 1;
-                } else if (index === nextIndex || index === prevIndex) {
-                  zIndex = 5;
-                  scale = 0.9;
-                  opacity = 0.8;
-                }
-                
-                return (
-                  <motion.div
-                    key={product.id}
-                    initial={{ opacity: 0, rotateY: angle }}
-                    animate={{ 
-                      opacity,
-                      scale,
-                      rotateY: angle - (currentIndex * (360 / products.length)),
-                      z: isActive ? 50 : 0
-                    }}
-                    transition={{ 
-                      duration: 0.6, 
-                      ease: "easeInOut"
-                    }}
-                    whileHover={{ 
-                      scale: isActive ? 1.05 : scale,
-                      z: isActive ? 60 : 10
-                    }}
-                    onClick={() => {
-                      if (isActive) {
-                        handlePurchase(product);
-                      } else {
-                        setCurrentIndex(index);
-                      }
-                    }}
-                    className="absolute top-1/2 left-1/2 w-48 cursor-pointer"
-                    style={{
-                      transform: `translate(-50%, -50%) rotateY(${angle - (currentIndex * (360 / products.length))}deg) translateZ(120px)`,
-                      zIndex,
-                      transformStyle: 'preserve-3d'
-                    }}
-                  >
-                    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-xl">
+          <div className="relative">
+            {/* Carousel Container */}
+            <div className="relative overflow-hidden rounded-2xl">
+              {/* Fade overlays */}
+              <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none"></div>
+              <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-gray-50 to-transparent z-10 pointer-events-none"></div>
+              
+              {/* Products Container */}
+              <div 
+                className="flex transition-transform duration-500 ease-in-out"
+                style={{ transform: `translateX(-${currentIndex * 200}px)` }}
+              >
+                {products.map((product, index) => {
+                  const isActive = index === currentIndex;
+                  const isVisible = index >= currentIndex - 1 && index <= currentIndex + 2;
+                  
+                  if (!isVisible) return null;
+                  
+                  return (
+                    <motion.div
+                      key={product.id}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      className="w-48 flex-shrink-0 p-2"
+                    >
                       <div 
-                        className="relative overflow-hidden h-32"
-                        style={{
-                          backgroundColor: product.dominantColor
-                        }}
+                        className={`bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-300 cursor-pointer ${
+                          isActive ? 'shadow-lg scale-105 ring-2 ring-purple-100' : 'hover:shadow-md hover:scale-102'
+                        }`}
+                        onClick={() => handlePurchase(product)}
                       >
-                        <img 
-                          src={product.image} 
-                          alt={product.title} 
-                          className="w-full h-full object-contain p-2"
-                        />
-                        {isActive && (
-                          <div className="absolute top-2 right-2 bg-purple-500 text-white text-xs px-2 py-1 rounded-full">
-                            Featured
-                          </div>
-                        )}
-                      </div>
-                      
-                      <div className="p-4">
-                        <h3 className="font-medium text-sm text-gray-900 mb-2 line-clamp-2 min-h-[2.5rem] leading-tight">
-                          {product.title}
-                        </h3>
-                        <p className="text-lg font-semibold text-purple-600 mb-3">
-                          {product.price}
-                        </p>
+                        <div 
+                          className="relative overflow-hidden h-32"
+                          style={{
+                            backgroundColor: product.dominantColor
+                          }}
+                        >
+                          <img 
+                            src={product.image} 
+                            alt={product.title} 
+                            className="w-full h-full object-contain p-2"
+                          />
+                          {isActive && (
+                            <div className="absolute top-2 right-2 bg-purple-500 text-white text-xs px-2 py-1 rounded-full">
+                              Featured
+                            </div>
+                          )}
+                        </div>
                         
-                        {isActive && (
-                          <motion.button
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2 }}
-                            className="w-full bg-purple-600 text-white font-medium py-2 px-4 rounded-full hover:bg-purple-700 transition-colors duration-200 text-sm"
-                          >
+                        <div className="p-4">
+                          <h3 className="font-medium text-sm text-gray-900 mb-2 line-clamp-2 min-h-[2.5rem] leading-tight">
+                            {product.title}
+                          </h3>
+                          <p className="text-lg font-semibold text-purple-600 mb-3">
+                            {product.price}
+                          </p>
+                          
+                          <button className="w-full bg-purple-600 text-white font-medium py-2 px-4 rounded-full hover:bg-purple-700 transition-colors duration-200 text-sm">
                             Shop Now
-                          </motion.button>
-                        )}
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
+                    </motion.div>
+                  );
+                })}
+              </div>
             </div>
             
             {/* Navigation Controls */}
-            <div className="absolute inset-0 flex items-center justify-between pointer-events-none">
+            <div className="absolute inset-y-0 left-0 flex items-center">
               <button
                 onClick={prevProduct}
-                className="pointer-events-auto ml-4 bg-white/90 hover:bg-white p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110 z-20"
+                disabled={currentIndex === 0}
+                className="ml-2 bg-white/90 hover:bg-white p-2 rounded-full shadow-md transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed z-20"
               >
-                <ChevronLeft className="w-5 h-5 text-gray-700" />
+                <ChevronLeft className="w-4 h-4 text-gray-700" />
               </button>
-              
+            </div>
+            
+            <div className="absolute inset-y-0 right-0 flex items-center">
               <button
                 onClick={nextProduct}
-                className="pointer-events-auto mr-4 bg-white/90 hover:bg-white p-3 rounded-full shadow-lg transition-all duration-200 hover:scale-110 z-20"
+                disabled={currentIndex >= products.length - 1}
+                className="mr-2 bg-white/90 hover:bg-white p-2 rounded-full shadow-md transition-all duration-200 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed z-20"
               >
-                <ChevronRight className="w-5 h-5 text-gray-700" />
+                <ChevronRight className="w-4 h-4 text-gray-700" />
               </button>
             </div>
             
             {/* Dots indicator */}
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-20">
+            <div className="flex justify-center space-x-2 mt-4">
               {products.map((_, index) => (
                 <button
                   key={index}
