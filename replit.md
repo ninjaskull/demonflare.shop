@@ -111,3 +111,4 @@ Preferred communication style: Simple, everyday language.
 - June 22, 2025: Added automatic dominant color extraction from product images to create seamless background matching
 - June 22, 2025: Simplified to use consistent #E9E9E9 background color matching actual product image backgrounds
 - June 22, 2025: Updated Instagram link to correct demonflare.shop account
+- June 22, 2025: Updated icons to modern anime-themed emojis (lightning bolt, fire, Japanese map, stars)

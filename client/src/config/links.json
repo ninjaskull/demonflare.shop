@@ -8,31 +8,31 @@
     {
       "title": "Visit Our Store",
       "url": "https://demonflare.com",
-      "icon": "🛍️",
+      "icon": "⚡",
       "gradient": "gradient-coral"
     },
     {
       "title": "Instagram",
       "url": "https://www.instagram.com/demonflare.shop/",
-      "icon": "📸",
+      "icon": "🔥",
       "gradient": "gradient-secondary"
     },
     {
       "title": "All Collections",
       "url": "https://demonflare.com/collections",
-      "icon": "🎌",
+      "icon": "🗾",
       "gradient": "gradient-accent"
     },
     {
       "title": "Contact Us",
       "url": "https://demonflare.com/pages/contact",
-      "icon": "📧",
+      "icon": "⭐",
       "gradient": "gradient-purple"
     },
     {
       "title": "About Us",
       "url": "https://demonflare.com/pages/about",
-      "icon": "ℹ️",
+      "icon": "🌟",
       "gradient": "gradient-secondary"
     }
   ]
