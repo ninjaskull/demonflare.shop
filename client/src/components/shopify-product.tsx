@@ -32,31 +32,60 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
 
   const fetchDemonflareProducts = async () => {
     try {
-      const response = await fetch('https://demonflare.com/products.json');
-      const data = await response.json();
+
       
-      if (data.products && data.products.length > 0) {
+      // Try the main API first
+      let response = await fetch('https://demonflare.com/products.json', {
+        mode: 'cors',
+        headers: {
+          'Accept': 'application/json',
+        }
+      });
+      
+      if (!response.ok) {
+
+        // Try alternative endpoint
+        response = await fetch('https://demonflare.com/collections/all/products.json', {
+          mode: 'cors',
+          headers: {
+            'Accept': 'application/json',
+          }
+        });
+      }
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+
+      
+      if (data.products && Array.isArray(data.products) && data.products.length > 0) {
+
         const shuffled = data.products.sort(() => 0.5 - Math.random());
         const selectedProducts = shuffled.slice(0, 6);
         
         const productsWithColors = selectedProducts.map((product: any) => ({
           id: product.id,
           title: product.title,
-          price: `₹${product.variants[0]?.price || '0.00'}`,
-          image: product.images[0]?.src || '',
+          price: `₹${product.variants?.[0]?.price || '999.00'}`,
+          image: product.images?.[0]?.src || product.featured_image || '',
           handle: product.handle,
           dominantColor: getProductBackgroundColor()
         }));
         
         setProducts(productsWithColors);
       } else {
+
         setError('No products found');
       }
       
       setLoading(false);
     } catch (err) {
       console.error('Error loading products:', err);
-      setError('Failed to load products from demonflare.com');
+
+      
+      setError(`Failed to load products: ${err instanceof Error ? err.message : 'Unknown error'}`);
       setLoading(false);
     }
   };
