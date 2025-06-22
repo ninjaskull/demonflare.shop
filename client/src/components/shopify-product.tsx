@@ -29,56 +29,99 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
   const extractDominantColor = (imageSrc: string): Promise<string> => {
     return new Promise((resolve) => {
       const img = new Image();
-      img.crossOrigin = 'anonymous';
       
       img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        
-        if (!ctx) {
-          resolve('rgb(248, 113, 113)'); // fallback red
-          return;
-        }
-        
-        canvas.width = img.width;
-        canvas.height = img.height;
-        ctx.drawImage(img, 0, 0);
-        
         try {
-          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          
+          if (!ctx) {
+            resolve('rgb(248, 113, 113)');
+            return;
+          }
+          
+          // Use smaller canvas for better performance
+          const size = 100;
+          canvas.width = size;
+          canvas.height = size;
+          ctx.drawImage(img, 0, 0, size, size);
+          
+          const imageData = ctx.getImageData(0, 0, size, size);
           const data = imageData.data;
           
-          let r = 0, g = 0, b = 0, count = 0;
+          // Color frequency map
+          const colorMap = new Map<string, number>();
           
-          // Sample every 10th pixel for performance
-          for (let i = 0; i < data.length; i += 40) {
-            // Skip very light/white pixels
-            if (data[i] + data[i + 1] + data[i + 2] < 700) {
-              r += data[i];
-              g += data[i + 1];
-              b += data[i + 2];
-              count++;
+          // Sample pixels and count colors
+          for (let i = 0; i < data.length; i += 16) { // Sample every 4th pixel
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            const alpha = data[i + 3];
+            
+            // Skip transparent or very light pixels
+            if (alpha < 200 || r + g + b > 650) continue;
+            
+            // Group similar colors together (reduce precision)
+            const rGroup = Math.floor(r / 32) * 32;
+            const gGroup = Math.floor(g / 32) * 32;
+            const bGroup = Math.floor(b / 32) * 32;
+            
+            const colorKey = `${rGroup},${gGroup},${bGroup}`;
+            colorMap.set(colorKey, (colorMap.get(colorKey) || 0) + 1);
+          }
+          
+          if (colorMap.size === 0) {
+            resolve('rgb(248, 113, 113)');
+            return;
+          }
+          
+          // Find the most frequent color
+          let maxCount = 0;
+          let dominantColor = 'rgb(248, 113, 113)';
+          
+          // Sort colors by frequency and pick the most vibrant one
+          const sortedColors = Array.from(colorMap.entries())
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 3); // Take top 3 colors
+          
+          // Choose the most vibrant color among top frequent ones
+          for (const [color, count] of sortedColors) {
+            const [r, g, b] = color.split(',').map(Number);
+            
+            // Calculate color vibrancy (saturation)
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            const saturation = max === 0 ? 0 : (max - min) / max;
+            
+            // Prefer colors with higher saturation and reasonable frequency
+            if (count > maxCount * 0.7 && saturation > 0.3) {
+              maxCount = count;
+              dominantColor = `rgb(${r}, ${g}, ${b})`;
+              break;
             }
           }
           
-          if (count > 0) {
-            r = Math.floor(r / count);
-            g = Math.floor(g / count);
-            b = Math.floor(b / count);
-            resolve(`rgb(${r}, ${g}, ${b})`);
-          } else {
-            resolve('rgb(248, 113, 113)'); // fallback red
+          // If no vibrant color found, use the most frequent one
+          if (dominantColor === 'rgb(248, 113, 113)' && sortedColors.length > 0) {
+            const [r, g, b] = sortedColors[0][0].split(',').map(Number);
+            dominantColor = `rgb(${r}, ${g}, ${b})`;
           }
+          
+          console.log(`Extracted color: ${dominantColor} from ${sortedColors.length} color groups`);
+          resolve(dominantColor);
         } catch (error) {
           console.error('Error extracting color:', error);
-          resolve('rgb(248, 113, 113)'); // fallback red
+          resolve('rgb(248, 113, 113)');
         }
       };
       
       img.onerror = () => {
-        resolve('rgb(248, 113, 113)'); // fallback red
+        resolve('rgb(248, 113, 113)');
       };
       
+      // Use proxy to avoid CORS issues
+      img.crossOrigin = 'anonymous';
       img.src = imageSrc;
     });
   };
@@ -96,8 +139,9 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
         
         // Extract dominant colors for each product
         const productsWithColors = await Promise.all(
-          selectedProducts.map(async (product: any) => {
+          selectedProducts.map(async (product: any, index: number) => {
             const dominantColor = await extractDominantColor(product.images[0]?.src || '');
+            console.log(`Product ${index}: ${product.title} - Color: ${dominantColor}`);
             return {
               id: product.id,
               title: product.title,
@@ -183,24 +227,24 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
                 >
                   <div className="bg-white/70 backdrop-blur-md rounded-3xl shadow-lg hover:shadow-xl overflow-hidden transition-all duration-500 h-full hover:scale-105">
                     <div 
-                      className="relative"
+                      className="relative overflow-hidden"
                       style={{
                         background: product.dominantColor 
-                          ? `linear-gradient(135deg, ${product.dominantColor}15, ${product.dominantColor}08)` 
-                          : 'linear-gradient(135deg, rgb(254, 226, 226), rgb(255, 237, 213))'
+                          ? `linear-gradient(135deg, ${product.dominantColor.replace('rgb(', 'rgba(').replace(')', ', 0.15)')}, ${product.dominantColor.replace('rgb(', 'rgba(').replace(')', ', 0.05)')})` 
+                          : 'linear-gradient(135deg, rgba(248, 113, 113, 0.15), rgba(255, 165, 0, 0.05))'
                       }}
                     >
                       <img 
                         src={product.image} 
                         alt={product.title} 
-                        className="w-full h-48 object-contain"
+                        className="w-full h-48 object-contain p-2"
                       />
                       <div 
-                        className="absolute inset-0 bg-gradient-to-t via-transparent to-transparent"
+                        className="absolute inset-0 pointer-events-none"
                         style={{
                           background: product.dominantColor 
-                            ? `linear-gradient(to top, ${product.dominantColor}20, transparent)` 
-                            : 'linear-gradient(to top, rgba(248, 113, 113, 0.2), transparent)'
+                            ? `radial-gradient(circle at center bottom, ${product.dominantColor.replace('rgb(', 'rgba(').replace(')', ', 0.2)')}, transparent 70%)` 
+                            : 'radial-gradient(circle at center bottom, rgba(248, 113, 113, 0.2), transparent 70%)'
                         }}
                       />
                     </div>
