@@ -102,3 +102,4 @@ Preferred communication style: Simple, everyday language.
 - June 22, 2025: Integrated demonflare.com products using public API
 - June 22, 2025: Updated branding and links for Demonflare anime merchandise store
 - June 22, 2025: Implemented random product selection from real demonflare.com inventory
+- June 22, 2025: Added product carousel with 4 products, navigation arrows, thumbnails, and full-size images
