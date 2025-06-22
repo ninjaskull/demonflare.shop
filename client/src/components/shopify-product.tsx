@@ -6,88 +6,56 @@ interface ShopifyProductProps {
   config: ShopifyConfig;
 }
 
-interface DemoProduct {
+interface Product {
+  id: number;
   title: string;
   price: string;
   image: string;
+  handle: string;
 }
 
 export function ShopifyProduct({ config }: ShopifyProductProps) {
   const [loading, setLoading] = useState(true);
-  const [product, setProduct] = useState<DemoProduct | null>(null);
+  const [product, setProduct] = useState<Product | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    initializeShopifyProduct();
+    fetchDemonflareProduct();
   }, []);
 
-  const initializeShopifyProduct = async () => {
+  const fetchDemonflareProduct = async () => {
     try {
-      // Check if Shopify SDK is available
-      if (typeof window.ShopifyBuy === 'undefined') {
-        // Show demo product with configuration instructions
-        setTimeout(() => {
-          const demoProducts: DemoProduct[] = [
-            {
-              title: "Premium Coffee Blend",
-              price: "$24.99",
-              image: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300"
-            },
-            {
-              title: "Organic Face Cream",
-              price: "$45.00",
-              image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300"
-            },
-            {
-              title: "Handmade Candle Set",
-              price: "$32.50",
-              image: "https://images.unsplash.com/photo-1602874801006-17f667b5043e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&h=300"
-            }
-          ];
-          
-          const randomProduct = demoProducts[Math.floor(Math.random() * demoProducts.length)];
-          setProduct(randomProduct);
-          setLoading(false);
-        }, 1000);
-        return;
-      }
-
-      // Initialize Shopify client with provided configuration
-      const client = window.ShopifyBuy.buildClient({
-        domain: config.domain,
-        storefrontAccessToken: config.storefrontAccessToken
-      });
-
-      // Select random product ID
-      const randomProductId = config.productIds[
-        Math.floor(Math.random() * config.productIds.length)
-      ];
-
-      // Fetch product from Shopify
-      const shopifyProduct = await client.product.fetch(randomProductId);
+      // Fetch products from demonflare.com public API
+      const response = await fetch('https://demonflare.com/products.json');
+      const data = await response.json();
       
-      if (shopifyProduct) {
+      if (data.products && data.products.length > 0) {
+        // Select a random product
+        const randomProduct = data.products[Math.floor(Math.random() * data.products.length)];
+        
         setProduct({
-          title: shopifyProduct.title,
-          price: `$${shopifyProduct.variants[0].price.amount}`,
-          image: shopifyProduct.images[0]?.src || ""
+          id: randomProduct.id,
+          title: randomProduct.title,
+          price: `₹${randomProduct.variants[0]?.price || '0.00'}`,
+          image: randomProduct.images[0]?.src || '',
+          handle: randomProduct.handle
         });
+      } else {
+        setError('No products found');
       }
       
       setLoading(false);
     } catch (err) {
-      console.error('Error loading Shopify product:', err);
-      setError('Failed to load product. Please check your Shopify configuration.');
+      console.error('Error loading product:', err);
+      setError('Failed to load product from demonflare.com');
       setLoading(false);
     }
   };
 
   const handlePurchase = () => {
-    if (typeof window.ShopifyBuy !== 'undefined') {
-      // TODO: Implement actual Shopify checkout flow
-      alert('Shopify checkout would be implemented here');
-    } else {
-      alert('Configure your Shopify domain and access token in /src/config/shopify.json');
+    if (product) {
+      // Open product page on demonflare.com
+      window.open(`https://demonflare.com/products/${product.handle}`, '_blank');
     }
   };
 
@@ -135,14 +103,11 @@ export function ShopifyProduct({ config }: ShopifyProductProps) {
                 onClick={handlePurchase}
                 className="w-full gradient-primary text-white font-semibold py-3 px-6 rounded-xl hover:shadow-lg transition-shadow duration-300"
               >
-                Add to Cart
+                View Product
               </motion.button>
               
               <p className="text-xs text-muted-foreground mt-3 text-center">
-                {typeof window.ShopifyBuy === 'undefined' 
-                  ? 'Demo product - Configure Shopify for real functionality'
-                  : 'Powered by Shopify'
-                }
+                From demonflare.com
               </p>
             </div>
           </div>

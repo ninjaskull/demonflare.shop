@@ -98,5 +98,7 @@ Preferred communication style: Simple, everyday language.
 
 ## Changelog
 
-Changelog:
-- June 22, 2025. Initial setup
+- June 22, 2025: Initial setup of Linktree-style application
+- June 22, 2025: Integrated demonflare.com products using public API
+- June 22, 2025: Updated branding and links for Demonflare anime merchandise store
+- June 22, 2025: Implemented random product selection from real demonflare.com inventory

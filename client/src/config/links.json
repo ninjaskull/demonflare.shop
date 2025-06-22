@@ -1,44 +1,38 @@
 {
   "profile": {
-    "name": "Jane Doe",
-    "bio": "Creator • Entrepreneur • Coffee Lover ☕",
-    "avatar": "JD"
+    "name": "Demonflare",
+    "bio": "Anime Collectibles & Merchandise 🔥",
+    "avatar": "DF"
   },
   "links": [
     {
-      "title": "My Website",
-      "url": "https://example.com",
-      "icon": "🌐",
+      "title": "Visit Our Store",
+      "url": "https://demonflare.com",
+      "icon": "🛍️",
       "gradient": "gradient-primary"
     },
     {
       "title": "Instagram",
-      "url": "https://instagram.com/username",
+      "url": "https://instagram.com/demonflare.official",
       "icon": "📸",
       "gradient": "gradient-accent"
     },
     {
-      "title": "YouTube Channel",
-      "url": "https://youtube.com/@username",
-      "icon": "🎥",
+      "title": "All Collections",
+      "url": "https://demonflare.com/collections",
+      "icon": "🎌",
       "gradient": "gradient-warning"
     },
     {
-      "title": "Newsletter",
-      "url": "https://newsletter.example.com",
+      "title": "Contact Us",
+      "url": "https://demonflare.com/pages/contact",
       "icon": "📧",
       "gradient": "gradient-purple"
     },
     {
-      "title": "Shop My Store",
-      "url": "https://shop.example.com",
-      "icon": "🛍️",
-      "gradient": "gradient-success"
-    },
-    {
-      "title": "Book a Call",
-      "url": "https://calendly.com/username",
-      "icon": "📅",
+      "title": "About Us",
+      "url": "https://demonflare.com/pages/about",
+      "icon": "ℹ️",
       "gradient": "gradient-secondary"
     }
   ]

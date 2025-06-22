@@ -25,7 +25,7 @@ export default function Home() {
           
           {/* Footer */}
           <div className="text-center text-xs text-muted-foreground mt-8">
-            <p>Powered by Linktree-style hub</p>
+            <p>Demonflare - Anime Collectibles Hub</p>
           </div>
         </div>
       </div>

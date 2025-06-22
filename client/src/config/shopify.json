@@ -1,9 +1,11 @@
 {
-  "domain": "your-shop.myshopify.com",
+  "domain": "demonflare.com",
   "storefrontAccessToken": "your-storefront-access-token",
   "productIds": [
-    "gid://shopify/Product/123456789",
-    "gid://shopify/Product/987654321",
-    "gid://shopify/Product/456789123"
+    "14669134233965",
+    "14669129384301",
+    "14669128925549",
+    "14669128794477",
+    "14669128761709"
   ]
 }
