@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+
 import './App.css'
 import ProfileHeader from './components/ProfileHeader'
 import LinksList from './components/LinksList'
