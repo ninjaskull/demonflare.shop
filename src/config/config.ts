@@ -44,7 +44,7 @@ export const config: AppConfig = {
     },
     {
       title: "Instagram",
-      url: "https://instagram.com/demonflare",
+      url: "https://instagram.com/demonflare.shop",
       icon: "instagram",
       gradient: "gradient-secondary"
     },

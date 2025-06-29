@@ -115,3 +115,4 @@ Preferred communication style: Simple, everyday language.
 - June 29, 2025: Migrated from full-stack Replit Agent to frontend-only Vite structure for Cloudflare Pages deployment
 - June 29, 2025: Removed all Shopify API dependencies and Buy Button SDK for public GitHub deployment
 - June 29, 2025: Replaced Shopify integration with static product showcase using anime merchandise data
+- June 29, 2025: Updated Instagram link to correct @demonflare.shop username
