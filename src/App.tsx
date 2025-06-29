@@ -2,7 +2,7 @@
 import './App.css'
 import ProfileHeader from './components/ProfileHeader'
 import LinksList from './components/LinksList'
-import ShopifyProduct from './components/ShopifyProduct'
+import ProductShowcase from './components/ProductShowcase'
 import { config } from './config/config'
 
 function App() {
@@ -62,7 +62,7 @@ function App() {
       <div className="relative z-10 container mx-auto px-4 py-8 max-w-md">
         <ProfileHeader profile={config.profile} />
         <LinksList links={config.links} />
-        <ShopifyProduct config={config.shopify} />
+        <ProductShowcase products={config.products.featured} />
       </div>
     </div>
   )

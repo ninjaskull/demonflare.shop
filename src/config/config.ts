@@ -11,16 +11,22 @@ export interface ProfileConfig {
   avatar: string;
 }
 
-export interface ShopifyConfig {
-  domain: string;
-  storefrontAccessToken: string;
-  productIds: string[];
+export interface Product {
+  id: number;
+  title: string;
+  price: string;
+  image: string;
+  handle: string;
+}
+
+export interface ProductsConfig {
+  featured: Product[];
 }
 
 export interface AppConfig {
   profile: ProfileConfig;
   links: LinkConfig[];
-  shopify: ShopifyConfig;
+  products: ProductsConfig;
 }
 
 export const config: AppConfig = {
@@ -67,9 +73,36 @@ export const config: AppConfig = {
       gradient: "gradient-success"
     }
   ],
-  shopify: {
-    domain: "demonflare.myshopify.com",
-    storefrontAccessToken: "6d32b2a9292e66b6a9b06e7d33a6fc01",
-    productIds: ["7719568761983", "7719568925823", "7747488489599"]
+  products: {
+    featured: [
+      {
+        id: 1,
+        title: "Demon Slayer Tanjiro Kamado Figure",
+        price: "₹2,499",
+        image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=400&fit=crop&crop=center",
+        handle: "demon-slayer-tanjiro-figure"
+      },
+      {
+        id: 2,
+        title: "Attack on Titan Eren Keychain",
+        price: "₹599",
+        image: "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?w=400&h=400&fit=crop&crop=center",
+        handle: "attack-titan-eren-keychain"
+      },
+      {
+        id: 3,
+        title: "Naruto Uzumaki Poster Set",
+        price: "₹899",
+        image: "https://images.unsplash.com/photo-1578662015901-94769c4cbe88?w=400&h=400&fit=crop&crop=center",
+        handle: "naruto-uzumaki-poster-set"
+      },
+      {
+        id: 4,
+        title: "One Piece Luffy Action Figure",
+        price: "₹1,899",
+        image: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&h=400&fit=crop&crop=center",
+        handle: "one-piece-luffy-figure"
+      }
+    ]
   }
 };
